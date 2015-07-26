@@ -4,6 +4,8 @@ name: TODO
 uuid: C4148F51-A197-48D0-9246-C2FDC60B630F
 
 settings:
+- settings:
+    lineHighlight: '#000A'
 - scope: todo.block
   settings:
     background: '#FFFFFF05'

@@ -11,8 +11,8 @@
 
   <xsl:template match="plist/dict/array">
     <xsl:copy>
-      <xsl:apply-templates select="@* | node()[not(self::entry)] | entry[not(id = $settings/id)]" />
       <xsl:apply-templates select="$settings" />
+      <xsl:apply-templates select="@* | node()[not(self::entry)] | entry[not(id = $settings/id)]" />
     </xsl:copy>
   </xsl:template>
 </xsl:stylesheet>
