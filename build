@@ -1,0 +1,36 @@
+#!/bin/bash
+
+user_dir="/home/${USER}/.config/sublime-text-3/Packages/User"
+
+build_color_scheme() {
+  echo "Updating ${user_dir}/todo.tmTheme"
+  xsltproc -o todo.tmTheme todo.tmTheme.xsl todo.tmTheme
+  touch -hm "${user_dir}/todo.tmTheme"
+}
+
+build_syntax() {
+  echo "Updating ${user_dir}/todo.tmLanguage"
+  touch -hm "${user_dir}/todo.tmLanguage"
+}
+
+case "$1" in
+  "monitor")
+    echo "Monitoring file changes…"
+    while true; do
+      event=$(inotifywait -qe close_write .)
+      file=${event#./ * }
+      case "$file" in
+        "todo.tmLanguage")
+          build_syntax
+          ;;
+        "todo.tmTheme")
+          build_color_scheme
+          ;;
+      esac
+    done
+    ;;
+  *)
+    build_color_scheme
+    build_syntax
+    ;;
+esac
