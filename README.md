@@ -4,7 +4,7 @@
 
 ## Syntax
 
-Start a TODO block using `TODO: <title>` as the first line. Optionally, you can end the TODO block using `:TODO` as the last line.
+Start a TODO block using `TODO:`, optionally followed by a title, as its first line. Finally, you can end the TODO block using `:TODO` as the last line.
 
 Within the TODO block you can add tasks that start with one of the characters below followed by a whitespace:
 
