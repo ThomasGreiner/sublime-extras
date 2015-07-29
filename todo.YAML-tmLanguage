@@ -26,7 +26,7 @@ patterns:
     - include: $self
     - name: todo.important
       comment: Important task
-      begin: ^\s*(\!)\s
+      begin: ^\s*(\!)[\t ]
       beginCaptures:
         '1': {name: meta.todo.important}
       end: \n
@@ -36,7 +36,7 @@ patterns:
     
     - name: todo.open
       comment: Open task
-      begin: ^\s*(\-)\s
+      begin: ^\s*(\-)[\t ]
       beginCaptures:
         '1': {name: meta.todo.open}
       end: \n
@@ -46,7 +46,7 @@ patterns:
     
     - name: todo.uncertain
       comment: Questionable task
-      begin: ^\s*(\?)\s
+      begin: ^\s*(\?)[\t ]
       beginCaptures:
         '1': {name: meta.todo.uncertain}
       end: \n
@@ -56,7 +56,7 @@ patterns:
     
     - name: todo.ongoing
       comment: Ongoing task
-      begin: ^\s*(o)\s
+      begin: ^\s*(o)[\t ]
       beginCaptures:
         '1': {name: meta.todo.ongoing}
       end: \n
@@ -66,7 +66,7 @@ patterns:
     
     - name: todo.blocked
       comment: Blocked task
-      begin: ^\s*(\/)\s
+      begin: ^\s*(\/)[\t ]
       beginCaptures:
         '1': {name: meta.todo.blocked}
       end: \n
@@ -76,7 +76,7 @@ patterns:
     
     - name: todo.done
       comment: Done task
-      begin: ^\s*(x)\s
+      begin: ^\s*(x)[\t ]
       beginCaptures:
         '1': {name: meta.todo.done}
       end: \n
@@ -86,7 +86,7 @@ patterns:
     
     - name: todo.impossible
       comment: Impossible task
-      begin: ^\s*(\#)\s
+      begin: ^\s*(\#)[\t ]
       beginCaptures:
         '1': {name: meta.todo.impossible}
       end: \n
