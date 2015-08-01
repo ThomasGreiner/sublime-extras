@@ -2,18 +2,39 @@
 
 user_dir="/home/${USER}/.config/sublime-text-3/Packages/User"
 
+usage() {
+cat << EOF
+Usage: $0 <command>
+
+COMMANDS:
+  create    Create files for Sublime Text 3
+  deploy    Create and copy files to user configuration directory
+  monitor   Monitor file changes and auto-deploy to user configuration directory
+EOF
+}
+
 build_color_scheme() {
   echo "Updating ${user_dir}/todo.tmTheme"
-  xsltproc -o todo.tmTheme todo.tmTheme.xsl todo.tmTheme
-  touch -hm "${user_dir}/todo.tmTheme"
+  ./yaml2plist.js theme.yaml > todo.tmTheme
+  xsltproc -o todo.tmTheme theme.xsl todo.tmTheme
 }
 
 build_syntax() {
   echo "Updating ${user_dir}/todo.tmLanguage"
-  touch -hm "${user_dir}/todo.tmLanguage"
+  ./yaml2plist.js language.yaml > todo.tmLanguage
 }
 
 case "$1" in
+  "create")
+    build_color_scheme
+    build_syntax
+    ;;
+  "deploy")
+    build_color_scheme
+    build_syntax
+    mv todo.tmTheme "${user_dir}/todo.tmTheme"
+    mv todo.tmLanguage "${user_dir}/todo.tmLanguage"
+    ;;
   "monitor")
     echo "Monitoring file changes…"
     while true; do
@@ -30,7 +51,5 @@ case "$1" in
     done
     ;;
   *)
-    build_color_scheme
-    build_syntax
-    ;;
+    usage
 esac
