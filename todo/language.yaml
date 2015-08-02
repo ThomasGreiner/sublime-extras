@@ -1,7 +1,5 @@
 # [PackageDev] target_format: plist, ext: tmLanguage
-# see http://docs.sublimetext.info/en/latest/extensibility/syntaxdefs.html
-# see http://manual.macromates.com/en/language_grammars
----
+
 name: TODO
 scopeName: text.todo
 fileTypes: [todo, txt]
@@ -93,4 +91,3 @@ patterns:
         patterns:
           - include: $self
           - *ticket
-...
