@@ -11,6 +11,7 @@ COMMAND:
   deploy    Create and copy files to user configuration directory
 
 SYNTAX:
+  abp       Adblock Plus filter syntax
   todo      Task list
 EOF
 }
@@ -27,7 +28,7 @@ build_syntax() {
 }
 
 syntax=$2
-if [ -z "$syntax" -o "$syntax" != "todo" ]; then
+if [ -z "$syntax" -o "$syntax" != "abp" -a "$syntax" != "todo" ]; then
   usage
   exit 1
 fi

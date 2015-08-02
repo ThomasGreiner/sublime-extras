@@ -1,5 +1,15 @@
 # Extras for Sublime Text 3
 
+## abp.tmLanguage
+
+[Sublime Text 3][st3] syntax definition and color scheme for [Adblock Plus filter lists][abp].
+
+### Installation
+
+1. Download `FreshCut.tmLanguage` from [Colour Schemes by Dayle Rees][freshcut].
+2. Run `./build create abp`
+3. Copy `abp.sublime-settings`, `abp.tmLanguage` and `abp.tmTheme` to the `Packages/User/` directory.
+
 ## todo.tmLanguage
 
 [Sublime Text 3][st3] syntax definition and color scheme for plain text files containing lists of tasks that need to be done (i.e. ToDos).
@@ -51,5 +61,6 @@ o removing items doesn't work
 1. Modify `language.yaml`, `settings.json` and/or `theme.yaml`.
 2. Run `./build deploy <syntax>` to update the files in Sublime's user directory.
 
+[abp]: https://adblockplus.org/en/filters
 [freshcut]: https://github.com/daylerees/colour-schemes/blob/master/legacy/Contrast/FreshCut.tmTheme
 [st3]: http://www.sublimetext.com/
