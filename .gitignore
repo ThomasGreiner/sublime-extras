@@ -1,4 +1,4 @@
 FreshCut.tmTheme
-todo.plist
-todo.tmLanguage
-todo.tmTheme
+*.sublime-settings
+*.tmLanguage
+*.tmTheme

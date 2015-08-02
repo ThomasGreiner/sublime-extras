@@ -4,52 +4,48 @@ user_dir="/home/${USER}/.config/sublime-text-3/Packages/User"
 
 usage() {
 cat << EOF
-Usage: $0 <command>
+Usage: $0 <command> <syntax>
 
-COMMANDS:
+COMMAND:
   create    Create files for Sublime Text 3
   deploy    Create and copy files to user configuration directory
-  monitor   Monitor file changes and auto-deploy to user configuration directory
+
+SYNTAX:
+  todo      Task list
 EOF
 }
 
 build_color_scheme() {
-  echo "Updating ${user_dir}/todo.tmTheme"
-  ./yaml2plist.js theme.yaml > todo.tmTheme
-  xsltproc -o todo.tmTheme theme.xsl todo.tmTheme
+  echo "Updating ${user_dir}/$1.tmTheme"
+  ./yaml2plist.js "$1/theme.yaml" > "$1.tmTheme"
+  xsltproc -o "$1.tmTheme" theme.xsl "$1.tmTheme"
 }
 
 build_syntax() {
-  echo "Updating ${user_dir}/todo.tmLanguage"
-  ./yaml2plist.js language.yaml > todo.tmLanguage
+  echo "Updating ${user_dir}/$1.tmLanguage"
+  ./yaml2plist.js "$1/language.yaml" > "$1.tmLanguage"
 }
+
+syntax=$2
+if [ -z "$syntax" -o "$syntax" != "todo" ]; then
+  usage
+  exit 1
+fi
 
 case "$1" in
   "create")
-    build_color_scheme
-    build_syntax
+    cp "${syntax}/settings.json" "${syntax}.sublime-settings"
+    build_color_scheme $syntax
+    build_syntax $syntax
     ;;
   "deploy")
-    build_color_scheme
-    build_syntax
-    mv todo.tmTheme "${user_dir}/todo.tmTheme"
-    mv todo.tmLanguage "${user_dir}/todo.tmLanguage"
-    ;;
-  "monitor")
-    echo "Monitoring file changes…"
-    while true; do
-      event=$(inotifywait -qe close_write .)
-      file=${event#./ * }
-      case "$file" in
-        "todo.tmLanguage")
-          build_syntax
-          ;;
-        "todo.tmTheme")
-          build_color_scheme
-          ;;
-      esac
-    done
+    build_color_scheme $syntax
+    build_syntax $syntax
+    cp "${syntax}/settings.json" "${user_dir}/${syntax}.sublime-settings"
+    mv "${syntax}.tmTheme" "${user_dir}/${syntax}.tmTheme"
+    mv "${syntax}.tmLanguage" "${user_dir}/${syntax}.tmLanguage"
     ;;
   *)
     usage
+    exit 1
 esac
