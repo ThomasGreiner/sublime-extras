@@ -1,52 +1,75 @@
 #!/bin/bash
 
-user_dir="/home/${USER}/.config/sublime-text-3/Packages/User"
-
 usage() {
 cat << EOF
-Usage: $0 <command> <syntax>
+Usage: $0 [-o <output-dir>] <syntax-name> <path-to-syntax>
 
-COMMAND:
-  create    Create files for Sublime Text 3
-  deploy    Create and copy files to user configuration directory
-
-SYNTAX:
-  abp       Adblock Plus filter syntax
-  todo      Task list
+OPTIONS:
+  -o <output-dir>   Create and save result to specified directory
 EOF
 }
 
-build_color_scheme() {
-  echo "Updating ${user_dir}/$1.tmTheme"
-  ./yaml2plist.js "$1/theme.yaml" > "$1.tmTheme"
-  xsltproc -o "$1.tmTheme" theme.xsl "$1.tmTheme"
-}
-
-build_syntax() {
-  echo "Updating ${user_dir}/$1.tmLanguage"
-  ./yaml2plist.js "$1/language.yaml" > "$1.tmLanguage"
-}
-
-syntax=$2
-if [ -z "$syntax" -o "$syntax" != "abp" -a "$syntax" != "todo" ]; then
+if [ $# -lt 2 ]; then
   usage
   exit 1
 fi
 
-case "$1" in
-  "create")
-    cp "${syntax}/settings.json" "${syntax}.sublime-settings"
-    build_color_scheme $syntax
-    build_syntax $syntax
-    ;;
-  "deploy")
-    build_color_scheme $syntax
-    build_syntax $syntax
-    cp "${syntax}/settings.json" "${user_dir}/${syntax}.sublime-settings"
-    mv "${syntax}.tmTheme" "${user_dir}/${syntax}.tmTheme"
-    mv "${syntax}.tmLanguage" "${user_dir}/${syntax}.tmLanguage"
-    ;;
-  *)
-    usage
-    exit 1
-esac
+this_dir=`dirname "${BASH_SOURCE}"`
+sublime_dir="$HOME/.config/sublime-text-3/Packages/User"
+vim_dir="$HOME/.vim"
+
+while getopts ":o:" option; do
+  case $option in
+    o)
+      sublime_dir="$OPTARG"
+      vim_dir="$OPTARG"
+      ;;
+    ?)
+      usage
+      exit
+      ;;
+  esac
+done
+
+shift $((OPTIND-1))
+syntax_name="$1"
+syntax_dir="$2"
+
+build_color_scheme() {
+  if [ ! -e "${syntax_dir}/theme.yaml" ]; then
+    return
+  fi
+  echo "Creating ${syntax_name}.tmTheme"
+  if [ ! -e "${this_dir}/FreshCut.tmTheme" ]; then
+    wget -O "${this_dir}/FreshCut.tmTheme" "https://raw.githubusercontent.com/daylerees/colour-schemes/master/legacy/Contrast/FreshCut.tmTheme"
+  fi
+  ${this_dir}/yaml2plist.js "${syntax_dir}/theme.yaml" > "${syntax_name}.tmTheme"
+  xsltproc -o "${syntax_name}.tmTheme" "${this_dir}/theme.xsl" "${syntax_name}.tmTheme"
+}
+
+build_syntax() {
+  if [ ! -e "${syntax_dir}/language.yaml" ]; then
+    return
+  fi
+  echo "Creating ${syntax_name}.tmLanguage"
+  ${this_dir}/yaml2plist.js "${syntax_dir}/language.yaml" > "${syntax_name}.tmLanguage"
+}
+
+deploy() {
+  if [ -e "$2" ];then
+    echo "Deploying $3"
+    mkdir -p `dirname $3`
+    $1 "$2" "$3"
+  fi
+}
+
+# Sublime Text
+build_color_scheme
+build_syntax
+deploy cp "${syntax_dir}/settings.json" "${sublime_dir}/${syntax_name}.sublime-settings"
+deploy mv "${syntax_name}.tmTheme" "${sublime_dir}/${syntax_name}.tmTheme"
+deploy mv "${syntax_name}.tmLanguage" "${sublime_dir}/${syntax_name}.tmLanguage"
+
+# VIM
+deploy cp "${syntax_dir}/syntax.vim" "${vim_dir}/syntax/${syntax_name}.vim"
+deploy cp "${syntax_dir}/ftdetect.vim" "${vim_dir}/ftdetect/${syntax_name}.vim"
