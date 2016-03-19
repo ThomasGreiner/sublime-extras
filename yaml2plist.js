@@ -52,41 +52,37 @@ class StringNode extends Node {
 class ObjectNode extends Node {
   push(value) {
     if (!this._value) {
-      this._value = [];
+      this._value = new Set();
+    } else if (this._value instanceof Map) {
+      throw new Error("Cannot push to ObjectNode initialized as Map");
     }
     
-    if (this._value instanceof Array) {
-     this._value.push(value);
-    } else {
-      throw new Error("Cannot push to ObjectNode initialized as Object");
-    }
+    this._value.add(value);
   }
   
   set(key, value) {
     if (!this._value) {
-      this._value = Object.create(null);
+      this._value = new Map();
+    } else if (this._value instanceof Set) {
+      throw new Error("Cannot set key on ObjectNode initialized as Set");
     }
     
-    if (!(this._value instanceof Array)) {
-      this._value[key] = value;
-    } else {
-      throw new Error("Cannot set key on ObjectNode initialized as Array");
-    }
+    this._value.set(key, value);
   }
   
   toPLIST() {
     let plist = [];
-    if (this._value instanceof Array) {
+    if (this._value instanceof Set) {
       plist.push("<array>");
       for (let value of this._value) {
         plist.push(value.toPLIST());
       }
       plist.push("</array>");
-    } else {
+    } else if (this._value instanceof Map) {
       plist.push("<dict>");
-      for (let key in this._value) {
-        plist.push(`<key>${key}</key>`);
-        plist.push(this._value[key].toPLIST());
+      for (let pair of this._value) {
+        plist.push(`<key>${pair[0]}</key>`);
+        plist.push(pair[1].toPLIST());
       }
       plist.push("</dict>");
     }
@@ -99,7 +95,7 @@ class VariableNode extends ObjectNode {
   constructor(id) {
     super();
     if (!variables.has(id)) {
-      variables.set(id, Object.create(null));
+      variables.set(id, new Map());
     }
     this._value = variables.get(id);
   }
