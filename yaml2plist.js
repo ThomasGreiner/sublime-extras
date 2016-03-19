@@ -45,14 +45,14 @@ class Node {
 class StringNode extends Node {
   constructor(value) {
     super();
-    super._value = value || "";
+    this._value = value || "";
   }
 }
 
 class ObjectNode extends Node {
   push(value) {
     if (!this._value) {
-      super._value = [];
+      this._value = [];
     }
     
     if (this._value instanceof Array) {
@@ -64,10 +64,10 @@ class ObjectNode extends Node {
   
   set(key, value) {
     if (!this._value) {
-      super._value = Object.create(null);
+      this._value = Object.create(null);
     }
     
-    if (!(this.value instanceof Array)) {
+    if (!(this._value instanceof Array)) {
       this._value[key] = value;
     } else {
       throw new Error("Cannot set key on ObjectNode initialized as Array");
@@ -94,14 +94,14 @@ class ObjectNode extends Node {
   }
 }
 
-const variables = Object.create(null);
-class VariableNode extends Node {
+const variables = new Map();
+class VariableNode extends ObjectNode {
   constructor(id) {
     super();
-    if (!(id in variables)) {
-      variables[id] = Object.create(null);
+    if (!variables.has(id)) {
+      variables.set(id, Object.create(null));
     }
-    super._value = variables[id];
+    this._value = variables.get(id);
   }
 }
 
