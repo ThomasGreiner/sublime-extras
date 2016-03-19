@@ -17,7 +17,26 @@ require("fs").readFile(inputFile, "utf-8", (err, content) => {
   dumpPLIST(loadYAML(content));
 });
 
+function debug(indent, key, value) {
+  if (!isDebugMode)
+    return;
+  
+  if (typeof indent == "undefined") {
+    console.log("---");
+  } else if (typeof key == "undefined") {
+    console.log(`${indent}: push obj()`);
+  } else if (typeof value == "undefined") {
+    console.log(`${indent}: push var(${key})`);
+  } else {
+    console.log(`${indent}: set ${key}=${JSON.stringify(value)}`);
+  }
+}
+
 class Node {
+  toJSON() {
+    return this._value;
+  }
+  
   toPLIST() {
     return `<string>${this._value}</string>`;
   }
@@ -149,12 +168,12 @@ function loadYAML(str) {
       let trimmedLine = line.replace(/^\-\s+/, "");
       if (reVarValue.test(trimmedLine)) {
         let key = reVarValue.exec(trimmedLine)[1];
-        isDebugMode && console.log(`${indent}: push var(${key})`);
+        debug(indent, key);
         let node = new VariableNode(key);
         getParentNode(indent).push(node);
         continue;
       } else {
-        isDebugMode && console.log(`${indent}: push obj()`);
+        debug(indent);
         let node = new ObjectNode();
         getParentNode(indent).push(node);
         stack[indent] = node;
@@ -166,11 +185,11 @@ function loadYAML(str) {
     if (reMap.test(line)) {
       let key = reMap.exec(line)[1];
       let value = getValueNode(reMap.exec(line)[2]) || new ObjectNode();
-      isDebugMode && console.log(`${indent}: set ${key}=${JSON.stringify(value)}`);
+      debug(indent, key, value);
       getParentNode(indent).set(key, value);
       stack[indent] = value;
     } else {
-      isDebugMode && console.log("---");
+      debug();
     }
     
     previousIndent = indent;
