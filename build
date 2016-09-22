@@ -41,7 +41,7 @@ build_color_scheme() {
   fi
   echo "Creating ${syntax_name}.tmTheme"
   if [ ! -e "${this_dir}/FreshCut.tmTheme" ]; then
-    wget -O "${this_dir}/FreshCut.tmTheme" "https://raw.githubusercontent.com/daylerees/colour-schemes/master/legacy/Contrast/FreshCut.tmTheme"
+    wget -O "${this_dir}/FreshCut.tmTheme" "https://raw.githubusercontent.com/daylerees/colour-schemes/master/legacy/FreshCut.tmTheme"
   fi
   ${this_dir}/yaml2plist.js "${syntax_dir}/theme.yaml" > "${syntax_name}.tmTheme"
   xsltproc -o "${syntax_name}.tmTheme" "${this_dir}/theme.xsl" "${syntax_name}.tmTheme"
